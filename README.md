@@ -203,12 +203,6 @@ MongoDB would be better for:
 
 ---
 
-## 🧠 Interview / Presentation Ready Notes
-
-> “This project uses Redis for real-time score tracking and Socket.io to broadcast updates instantly to players. Each leaderboard is separated by game mode and region, and auto-resets daily using TTL. The architecture is modular and easily extensible to add history tracking or analytics.”
-
----
-
 ## 👤 Author
 
 **Kuldeep Yadav**  
