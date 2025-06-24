@@ -1,4 +1,3 @@
-```markdown
 # 🏆 Real-Time Leaderboard System
 
 A full-stack leaderboard service that tracks player scores in real time and displays them in a public React UI powered by Vite. Built with **Node.js**, **Socket.io**, and **Redis**, the system supports live score updates, top-N queries, filtering by game mode and region, dynamic player management, and daily auto-resets.
@@ -25,28 +24,27 @@ A full-stack leaderboard service that tracks player scores in real time and disp
 ---
 
 ## 📁 Repository Layout
+
 ```
-
 ScoreBoard/
-├── src/ # Backend source
-│ ├── config/
-│ │ └── redisClient.js # Redis connection setup
-│ ├── services/
-│ │ └── leaderboard.service.js # Core logic: updateScore & getTopPlayers
-│ ├── sockets/
-│ │ └── leaderboard.socket.js # Socket.io handlers
-│ └── index.js # Express + Socket.io server
-├── frontend/ # Vite + React app
-│ ├── src/
-│ │ └── components/
-│ │ └── Leaderboard.jsx # Real-time UI component
-│ ├── package.json # Frontend dependencies & scripts
-│ └── .env # VITE_SOCKET_URL
-├── test-client.js # Node.js CLI test script
-├── package.json # Backend dependencies & scripts
-└── README.md # This file
-
-````
+├── src/                            # Backend source
+│   ├── config/
+│   │   └── redisClient.js          # Redis connection setup
+│   ├── services/
+│   │   └── leaderboard.service.js  # Core logic: updateScore & getTopPlayers
+│   ├── sockets/
+│   │   └── leaderboard.socket.js   # Socket.io handlers
+│   └── index.js                    # Express + Socket.io server
+├── frontend/                       # Vite + React app
+│   ├── src/
+│   │   └── components/
+│   │       └── Leaderboard.jsx     # Real-time UI component
+│   ├── package.json                # Frontend dependencies & scripts
+│   └── .env                        # VITE_SOCKET_URL
+├── test-client.js                  # Node.js CLI test script
+├── package.json                    # Backend dependencies & scripts
+└── README.md                       # This file
+```
 
 ---
 
@@ -56,40 +54,29 @@ ScoreBoard/
    ```bash
    git clone https://github.com/yadav4646/real-time-leaderboard.git
    cd real-time-leaderboard
-````
-
+   ```
 2. **Install dependencies**
-
    ```bash
    npm install
    ```
-
 3. **Start Redis**
-
    - **Docker**:
-
      ```bash
      docker run -d --name redis -p 6379:6379 redis
      ```
-
    - **Local** (Debian/Ubuntu):
-
      ```bash
      sudo apt update
      sudo apt install redis-server -y
      redis-server
      ```
-
-4. **Configure**
+4. **Configure**  
    Create a `.env` at the project root with:
-
    ```ini
    PORT=3000
    REDIS_URL=redis://localhost:6379
    ```
-
 5. **Launch**
-
    ```bash
    npm start
    # or
@@ -101,22 +88,17 @@ ScoreBoard/
 ## 🖥️ Frontend Setup (Vite + React)
 
 1. **Navigate & install**
-
    ```bash
    cd frontend
    npm install
    npm install socket.io-client
    ```
-
-2. **Configure**
+2. **Configure**  
    Create `frontend/.env` with:
-
    ```ini
    VITE_SOCKET_URL=https://real-time-leaderboard.onrender.com
    ```
-
 3. **Run**
-
    ```bash
    npm run dev
    # Open http://localhost:5173
@@ -127,20 +109,15 @@ ScoreBoard/
 ## 🧪 Testing the System
 
 - **Backend health**:
-
   ```bash
   curl https://real-time-leaderboard.onrender.com/health
   # => OK
   ```
-
 - **CLI test client**:
-
   ```bash
   node test-client.js
   ```
-
   Should log:
-
   ```
   ✅ Connected to server
   📤 join emitted
@@ -154,25 +131,22 @@ ScoreBoard/
 
 ## 📡 API Events (Socket.io)
 
-| Event                   | Payload                                       | Description                          |
-| ----------------------- | --------------------------------------------- | ------------------------------------ |
-| **join**                | `{ gameMode, region }`                        | Subscribe to a leaderboard room      |
-| **score\:update**       | `{ playerId, name, gameMode, region, delta }` | Increment player score and broadcast |
-| **leaderboard\:getTop** | `{ gameMode, region, limit }`                 | Fetch top-N players                  |
-| **player\:joined**      | `{ playerId, name, delta }`                   | Add a new player with initial score  |
+| Event                  | Payload                                       | Description                          |
+| ---------------------- | --------------------------------------------- | ------------------------------------ |
+| **join**               | `{ gameMode, region }`                        | Subscribe to a leaderboard room      |
+| **score:update**       | `{ playerId, name, gameMode, region, delta }` | Increment player score and broadcast |
+| **leaderboard:getTop** | `{ gameMode, region, limit }`                 | Fetch top-N players                  |
+| **player:joined**      | `{ playerId, name, delta }`                   | Add a new player with initial score  |
 
 ---
 
 ## 💾 Data Storage Design
 
 - **Redis Key**:
-
   ```
   leaderboard:{gameMode}:{region}:{YYYYMMDD}
   ```
-
 - **Commands Used**:
-
   - `ZINCRBY` — increment player score
   - `ZREVRANK` — get player’s rank
   - `ZREVRANGE WITHSCORES` — fetch top-N list
@@ -198,7 +172,7 @@ MongoDB is better for:
 
 ## 🚀 Future Enhancements
 
-- **MongoDB Logging** — persist score history
+- **MongoDB Persistence** — persist score history
 - **REST API** — alongside Socket.io
 - **Admin Dashboard** — visualize metrics
 - **Auth & Rate Limiting** — secure endpoints
@@ -207,7 +181,7 @@ MongoDB is better for:
 
 ## 👤 Author
 
-**Kuldeep Yadav** — Full-Stack Developer
+**Kuldeep Yadav** — Full-Stack Developer  
 [LinkedIn](https://linkedin.com/in/kuldeep-yadavky)
 
 ---
@@ -215,7 +189,3 @@ MongoDB is better for:
 ## 📜 License
 
 MIT
-
-```
-
-```
