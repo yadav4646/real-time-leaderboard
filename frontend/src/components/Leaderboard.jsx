@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000';
@@ -15,6 +15,10 @@ export default function Leaderboard() {
     const [newPlayerId, setNewPlayerId] = useState('');
     const [newPlayerName, setNewPlayerName] = useState('');
     const [newPlayerScore, setNewPlayerScore] = useState(0);
+    const [retryCount, setRetryCount] = useState(0);
+    const maxRetries = 5;
+    const retryDelay = 2000; // ms
+    const timerRef = useRef(null);
 
     // Helper to recalculate ranks after sorting by score
     const recalcRanks = (arr) => arr
@@ -28,6 +32,8 @@ export default function Leaderboard() {
         socket.on('leaderboard:top', data => {
             setPlayers(recalcRanks(data));
             setLoading(false);
+            setRetryCount(0); // Reset retries on success
+            if (timerRef.current) clearTimeout(timerRef.current);
         });
 
         socket.on('leaderboard:update', ({ playerId, name, score }) => {
@@ -49,14 +55,41 @@ export default function Leaderboard() {
             });
         });
 
-        return () => socket.removeAllListeners();
+        return () => {
+            socket.removeAllListeners();
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
     }, [limit]);
 
     useEffect(() => {
         setLoading(true);
         setError(null);
-        socket.emit('join', { gameMode, region });
-        socket.emit('leaderboard:getTop', { gameMode, region, limit });
+        setPlayers([]);
+        let attempts = 0;
+
+        function requestLeaderboard() {
+            socket.emit('join', { gameMode, region });
+            socket.emit('leaderboard:getTop', { gameMode, region, limit });
+
+            attempts += 1;
+            setRetryCount(attempts);
+
+            // If no data after delay, retry
+            timerRef.current = setTimeout(() => {
+                if (attempts < maxRetries) {
+                    requestLeaderboard();
+                } else {
+                    setLoading(false);
+                    setError('Server is waking up or unavailable. Please try again in a moment.');
+                }
+            }, retryDelay);
+        }
+
+        requestLeaderboard();
+
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
     }, [gameMode, region, limit]);
 
     const handleAddPlayer = () => {
@@ -69,6 +102,30 @@ export default function Leaderboard() {
         setNewPlayerId(''); setNewPlayerName(''); setNewPlayerScore(0);
     };
 
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <div className="spinner" style={{
+                    border: '4px solid #f3f3f3',
+                    borderTop: '4px solid #3498db',
+                    borderRadius: '50%',
+                    width: '40px',
+                    height: '40px',
+                    animation: 'spin 1s linear infinite',
+                    margin: '0 auto'
+                }} />
+                <style>
+                    {`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    `}
+                </style>
+                <div>Loading leaderboard... (Attempt {retryCount}/{maxRetries})</div>
+            </div>
+        );
+    }
     return (
         <div className="w-full px-4 sm:px-6 lg:px-8 py-6">
             <div className="bg-white shadow-xl rounded-2xl p-6 mb-6 max-w-6xl mx-auto">
