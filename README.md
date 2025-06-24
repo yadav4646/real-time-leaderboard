@@ -116,8 +116,12 @@ Expected output:
 📤 join emitted
 📤 score:update emitted
 📤 leaderboard:getTop emitted
-📢 Leaderboard Update: { playerId: 'kuldeep', score: 60, rank: 1 }
-🏆 Top Players: [ { playerId: 'kuldeep', score: 60, rank: 1 } ]
+📢 Leaderboard Update: { playerId: 'kuldeep', score: 70, rank: 1 }
+🏆 Top Players: [
+  { playerId: 'kuldeep', name: 'Kuldeep Singh', score: 70, rank: 1 },
+  { playerId: 'Rahul', name: 'Rahul', score: 12, rank: 2 },
+  { playerId: 'JP', name: 'Jai Singh', score: 11, rank: 3 }
+]
 ```
 
 ---
