@@ -1,216 +1,213 @@
+```markdown
 # 🏆 Real-Time Leaderboard System
 
-A backend service for real-time score tracking and leaderboard updates using **Node.js**, **Socket.io**, and **Redis**.
-
-This system allows:
-
-- Real-time score updates
-- Live top-N leaderboards
-- Filtering by region and game mode
-- Daily auto-reset of scores
-- Fast and scalable architecture for multiplayer games
+A full-stack leaderboard service that tracks player scores in real time and displays them in a public React UI powered by Vite. Built with **Node.js**, **Socket.io**, and **Redis**, the system supports live score updates, top-N queries, filtering by game mode and region, dynamic player management, and daily auto-resets.
 
 ---
 
-## 🚀 Features
+## 🔗 Live Demo
 
-- ⚡ Real-time updates using WebSockets (Socket.io)
-- 🔢 Ranked leaderboards using Redis Sorted Sets
-- 🌍 Filters by `gameMode` and `region`
-- 🔁 Auto-resets daily using Redis TTL
-- 🧠 Modular codebase (config, services, sockets, utils)
+- **Frontend UI**: https://real-time-leaderboard-theta.vercel.app/
+- **Backend API**: https://real-time-leaderboard.onrender.com
 
 ---
 
-## 🧱 Tech Stack
+## 🚀 Key Features
 
-| Layer       | Technology                  |
-| ----------- | --------------------------- |
-| Runtime     | Node.js                     |
-| WebSockets  | Socket.io                   |
-| Data Store  | Redis                       |
-| Client Test | socket.io-client            |
-| Environment | Docker (Redis)              |
-| Structure   | Modular file-based Node app |
+- **Real-Time Backend**: Node.js + Socket.io for low-latency events
+- **In-Memory Store**: Redis Sorted Sets for fast ranking
+- **Daily Resets**: TTL-based keys auto-expire at midnight
+- **Filtering**: Leaderboards by `gameMode` (solo/duo/squad) and `region` (NA/EU/ASIA)
+- **Public UI**: Vite + React frontend with Tailwind CSS
+- **Player Management**: Add players with custom initial scores on the fly
+- **Accurate Ranking**: Client-side recalculation ensures unique sequential ranks
 
 ---
 
-## 📁 Folder Structure
-
+## 📁 Repository Layout
 ```
+
 ScoreBoard/
-├── src/
-│   ├── config/                # Redis config
-│   │   └── redisClient.js
-│   ├── utils/                 # Key formatting utility
-│   │   └── keyHelper.js
-│   ├── services/              # Core logic (update/fetch)
-│   │   └── leaderboard.service.js
-│   ├── sockets/               # WebSocket event handling
-│   │   └── leaderboard.socket.js
-│   └── index.js               # Main server entry point
-├── test-client.js             # Simulated test client
-├── package.json
-├── .env
-└── README.md
-```
+├── src/ # Backend source
+│ ├── config/
+│ │ └── redisClient.js # Redis connection setup
+│ ├── services/
+│ │ └── leaderboard.service.js # Core logic: updateScore & getTopPlayers
+│ ├── sockets/
+│ │ └── leaderboard.socket.js # Socket.io handlers
+│ └── index.js # Express + Socket.io server
+├── frontend/ # Vite + React app
+│ ├── src/
+│ │ └── components/
+│ │ └── Leaderboard.jsx # Real-time UI component
+│ ├── package.json # Frontend dependencies & scripts
+│ └── .env # VITE_SOCKET_URL
+├── test-client.js # Node.js CLI test script
+├── package.json # Backend dependencies & scripts
+└── README.md # This file
+
+````
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚙️ Backend Setup
 
-### 1. Clone the repository
+1. **Clone**
+   ```bash
+   git clone https://github.com/yadav4646/real-time-leaderboard.git
+   cd real-time-leaderboard
+````
 
-```bash
-git clone https://github.com/your-username/real-time-leaderboard.git
-cd real-time-leaderboard
-```
+2. **Install dependencies**
 
-### 2. Install dependencies
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+3. **Start Redis**
 
-### 3. Start Redis (via Docker)
+   - **Docker**:
 
-```bash
-docker run -d --name redis -p 6379:6379 redis
-```
+     ```bash
+     docker run -d --name redis -p 6379:6379 redis
+     ```
 
-### 4. Create `.env`
+   - **Local** (Debian/Ubuntu):
 
-```dotenv
-PORT=3000
-REDIS_URL=redis://localhost:6379
-```
+     ```bash
+     sudo apt update
+     sudo apt install redis-server -y
+     redis-server
+     ```
 
-### 5. Start the server
+4. **Configure**
+   Create a `.env` at the project root with:
 
-```bash
-npm start
-# or
-node src/index.js
-```
+   ```ini
+   PORT=3000
+   REDIS_URL=redis://localhost:6379
+   ```
+
+5. **Launch**
+
+   ```bash
+   npm start
+   # or
+   node src/index.js
+   ```
+
+---
+
+## 🖥️ Frontend Setup (Vite + React)
+
+1. **Navigate & install**
+
+   ```bash
+   cd frontend
+   npm install
+   npm install socket.io-client
+   ```
+
+2. **Configure**
+   Create `frontend/.env` with:
+
+   ```ini
+   VITE_SOCKET_URL=https://real-time-leaderboard.onrender.com
+   ```
+
+3. **Run**
+
+   ```bash
+   npm run dev
+   # Open http://localhost:5173
+   ```
 
 ---
 
 ## 🧪 Testing the System
 
-### 1. Run the backend server
+- **Backend health**:
 
-```bash
-node src/index.js
-```
+  ```bash
+  curl https://real-time-leaderboard.onrender.com/health
+  # => OK
+  ```
 
-### 2. In a second terminal, run the test client:
+- **CLI test client**:
 
-```bash
-node test-client.js
-```
+  ```bash
+  node test-client.js
+  ```
 
-Expected output:
+  Should log:
 
-```bash
-✅ Connected to server
-📤 join emitted
-📤 score:update emitted
-📤 leaderboard:getTop emitted
-📢 Leaderboard Update: { playerId: 'kuldeep', score: 70, rank: 1 }
-🏆 Top Players: [
-  { playerId: 'kuldeep', name: 'Kuldeep Singh', score: 70, rank: 1 },
-  { playerId: 'Rahul', name: 'Rahul', score: 12, rank: 2 },
-  { playerId: 'JP', name: 'Jai Singh', score: 11, rank: 3 }
-]
-```
+  ```
+  ✅ Connected to server
+  📤 join emitted
+  📤 score:update emitted
+  📤 leaderboard:getTop emitted
+  📢 Leaderboard Update: { … }
+  🏆 Top Players: [ … ]
+  ```
 
 ---
 
 ## 📡 API Events (Socket.io)
 
-### 🔸 `join`
-
-Join a leaderboard room:
-
-```json
-{ "gameMode": "solo", "region": "NA" }
-```
-
-### 🔸 `score:update`
-
-Update a player's score:
-
-```json
-{
-  "playerId": "kuldeep",
-  "gameMode": "solo",
-  "region": "NA",
-  "delta": 10
-}
-```
-
-### 🔸 `leaderboard:getTop`
-
-Fetch top N players:
-
-```json
-{
-  "gameMode": "solo",
-  "region": "NA",
-  "limit": 5
-}
-```
+| Event                   | Payload                                       | Description                          |
+| ----------------------- | --------------------------------------------- | ------------------------------------ |
+| **join**                | `{ gameMode, region }`                        | Subscribe to a leaderboard room      |
+| **score\:update**       | `{ playerId, name, gameMode, region, delta }` | Increment player score and broadcast |
+| **leaderboard\:getTop** | `{ gameMode, region, limit }`                 | Fetch top-N players                  |
+| **player\:joined**      | `{ playerId, name, delta }`                   | Add a new player with initial score  |
 
 ---
 
 ## 💾 Data Storage Design
 
-### Redis Key Structure:
+- **Redis Key**:
 
-```
-leaderboard:{gameMode}:{region}:{YYYYMMDD}
-```
+  ```
+  leaderboard:{gameMode}:{region}:{YYYYMMDD}
+  ```
 
-### Redis Commands Used:
+- **Commands Used**:
 
-- `ZINCRBY`: Increment player score
-- `ZREVRANK`: Get player's rank
-- `ZREVRANGE WITHSCORES`: Get top-N list
-- `ZSCORE`: Fetch player’s current score
-- `EXPIRE`: Automatically delete key at end of day
+  - `ZINCRBY` — increment player score
+  - `ZREVRANK` — get player’s rank
+  - `ZREVRANGE WITHSCORES` — fetch top-N list
+  - `ZSCORE` — read player’s score
+  - `EXPIRE` — auto-expire keys daily
 
 ---
 
 ## 🧠 Why Redis (Not MongoDB)?
 
-Redis is optimal for:
+Redis excels at:
 
 - Real-time ranking (Sorted Sets)
-- Instant score updates
-- Atomic operations and fast reads
-- Auto-reset via TTL
+- Atomic, in-memory operations
+- Automatic TTL resets
 
-MongoDB would be better for:
+MongoDB is better for:
 
 - Long-term analytics
-- Player profiles
-- Match history (can be added in future)
+- Player profiles & history
 
 ---
 
-## 📈 Future Enhancements
+## 🚀 Future Enhancements
 
-- ✅ Optional MongoDB integration for persistence
-- ✅ REST API layer alongside Socket.io
-- 📊 Admin dashboard with data visualization
-- 🛡 Rate limiting / authentication middleware
+- **MongoDB Logging** — persist score history
+- **REST API** — alongside Socket.io
+- **Admin Dashboard** — visualize metrics
+- **Auth & Rate Limiting** — secure endpoints
 
 ---
 
 ## 👤 Author
 
-**Kuldeep Yadav**  
-Full Stack Developer  
+**Kuldeep Yadav** — Full-Stack Developer
 [LinkedIn](https://linkedin.com/in/kuldeep-yadavky)
 
 ---
@@ -218,3 +215,7 @@ Full Stack Developer
 ## 📜 License
 
 MIT
+
+```
+
+```
