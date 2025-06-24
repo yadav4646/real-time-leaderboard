@@ -144,7 +144,9 @@ export default function Leaderboard() {
                         <option value="ASIA">ASIA</option>
                     </select>
                     <input type="number" value={limit} min={1} max={100} onChange={e => setLimit(+e.target.value)} className="border rounded-lg p-3" placeholder="Entries" />
-                    <button onClick={handleAddPlayer} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg p-3 transition-colors">Add Player</button>
+                </div>
+                <div className="flex justify-end">
+                    <button onClick={handleAddPlayer} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg p-2 transition-colors">Add Player</button>
                 </div>
 
                 <div className="flex space-x-4 mb-4">
